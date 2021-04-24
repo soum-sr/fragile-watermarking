@@ -142,7 +142,7 @@ def print_psnr(watermarkedpath, plainpath):
     watermarked = Image.open(watermarkedpath)
     plain = Image.open(plainpath)
 
-    print("PSNR: " + str(psnr(watermarked, plain)))
+    return psnr(watermarked, plain)
 
 
 def perform_watermark(task, input_file, watermark_file, watermark_output_path, extracted_watermark_path):
@@ -150,7 +150,8 @@ def perform_watermark(task, input_file, watermark_file, watermark_output_path, e
         print("Performing Insert watermark")
         insert_lsb(input_file, watermark_file, watermark_output_path)
         print("Watermark inserted")
-        print_psnr(watermark_output_path, input_file)
+        psnr_val = print_psnr(watermark_output_path, input_file)
+        return psnr_val
     else:
         print("Extracting...")
         extract_lsb(watermark_output_path, extracted_watermark_path)
