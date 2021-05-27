@@ -1,10 +1,13 @@
 import math
 import itertools
 import random
+import numpy as np
 from PIL import Image
-
+from image_quality import *
 
 # Size = Total pixels of the image, Shuffle_seed = if 0 then no shuffle, else shuffle order
+
+
 def shuffle_order(size, shuffle_seed):
     order = []
     for i in range(size):
@@ -120,38 +123,45 @@ def extract_lsb(inputpath, outputpath):
     lsb.save(outputpath)
 
 
-# COMPUTE PSNR
-def rms(image_a, image_b):
-    px_a = image_a.load()
-    px_b = image_b.load()
-    sum = 0
-    for i in range(image_a.width):
-        for j in range(image_a.height):
-            p_a = px_a[i, j]
-            p_b = px_b[i, j]
-            sum += math.pow((p_a[0] - p_b[0]), 2) + math.pow((p_a[1] - p_b[1]), 2) + math.pow((p_a[2] - p_b[2]), 2)
-
-    return math.sqrt(sum / (image_a.width * image_a.height) / 3)
-
-
-def psnr(watermarkedcover, plaincover):
-    return 20 * math.log10(255/rms(watermarkedcover, plaincover))
-
-
-def print_psnr(watermarkedpath, plainpath):
-    watermarked = Image.open(watermarkedpath)
-    plain = Image.open(plainpath)
-
-    return psnr(watermarked, plain)
-
-
 def perform_watermark(task, input_file, watermark_file, watermark_output_path, extracted_watermark_path):
     if task == 'i':
         print("Performing Insert watermark")
         insert_lsb(input_file, watermark_file, watermark_output_path)
         print("Watermark inserted")
-        psnr_val = print_psnr(watermark_output_path, input_file)
-        return psnr_val
+
+        input_image = Image.open(input_file)
+        input_image = np.array(input_image)
+        watermarked_image = Image.open(watermark_output_path)
+        watermarked_image = np.array(watermarked_image)
+
+        mse_val = mse(input_image, watermarked_image)
+        rmse_val = rmse(input_image, watermarked_image)
+
+        psnr_val = psnr(input_image, watermarked_image)
+        uqi_val = uqi(input_image, watermarked_image)
+        ssim_val = ssim(input_image, watermarked_image)
+        ergas_val = ergas(input_image, watermarked_image)
+        scc_val = scc(input_image, watermarked_image)
+        rase_val = rase(input_image, watermarked_image)
+        sam_val = sam(input_image, watermarked_image)
+        vifp_val = vifp(input_image, watermarked_image)
+        msssim_val = msssim(input_image, watermarked_image)
+        psnrb_val = psnrb(input_image, watermarked_image)
+
+        image_quality_metrics = {"mse": mse_val,
+                                 "rmse": rmse_val,
+                                 "psnr": psnr_val,
+                                 "uqi": uqi_val,
+                                 "ssim": ssim_val[0],
+                                 "ergas": ergas_val,
+                                 "scc": scc_val,
+                                 "rase": rase_val,
+                                 "sam": sam_val,
+                                 "vifp": vifp_val,
+                                 "msssim": msssim_val,
+                                 "psnrb": psnrb_val}
+
+        return image_quality_metrics
     else:
         print("Extracting...")
         extract_lsb(watermark_output_path, extracted_watermark_path)
