@@ -1,5 +1,6 @@
 import math
 import itertools
+import os
 import random
 import numpy as np
 from PIL import Image
@@ -123,7 +124,7 @@ def extract_lsb(inputpath, outputpath):
     lsb.save(outputpath)
 
 
-def perform_watermark(task, input_file, watermark_file, watermark_output_path, extracted_watermark_path):
+def perform_watermark_metrics(task, input_file, watermark_file, watermark_output_path, extracted_watermark_path):
     if task == 'i':
         print("Performing Insert watermark")
         insert_lsb(input_file, watermark_file, watermark_output_path)
@@ -136,7 +137,6 @@ def perform_watermark(task, input_file, watermark_file, watermark_output_path, e
 
         mse_val = mse(input_image, watermarked_image)
         rmse_val = rmse(input_image, watermarked_image)
-
         psnr_val = psnr(input_image, watermarked_image)
         uqi_val = uqi(input_image, watermarked_image)
         ssim_val = ssim(input_image, watermarked_image)
@@ -165,4 +165,41 @@ def perform_watermark(task, input_file, watermark_file, watermark_output_path, e
     else:
         print("Extracting...")
         extract_lsb(watermark_output_path, extracted_watermark_path)
+
+        watermark_image = Image.open(watermark_file)
+        watermark_image = np.array(watermark_image)
+
+        extracted_watermark = Image.open(extracted_watermark_path)
+        extracted_watermark = np.array(extracted_watermark)
+
+        psnr_val = psnr(watermark_image, extracted_watermark)
         print("Extracted!!")
+        return psnr_val
+
+
+def perform_watermark(task, input_file, watermark_file, watermark_output_path, extracted_watermark_path):
+    if task == 'i':
+        print("Performing Insert watermark")
+        insert_lsb(input_file, watermark_file, watermark_output_path)
+        print("Watermark inserted")
+
+        input_image = Image.open(input_file)
+        input_image = np.array(input_image)
+        watermarked_image = Image.open(watermark_output_path)
+        watermarked_image = np.array(watermarked_image)
+
+        psnr_val = psnr(input_image, watermarked_image)
+
+        print("PSNR VALUE: ", psnr_val)
+
+    else:
+        extract_lsb(watermark_output_path, extracted_watermark_path)
+
+        watermark_image = Image.open(watermark_file)
+        watermark_image = np.array(watermark_image)
+
+        extracted_watermark = Image.open(extracted_watermark_path)
+        extracted_watermark = np.array(extracted_watermark)
+
+        mse_val = mse(watermark_image, extracted_watermark)
+        return mse_val

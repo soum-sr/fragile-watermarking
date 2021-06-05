@@ -36,15 +36,18 @@ for input_file in os.listdir(input_folder):
         if input_file != watermark_file:
             input_path = os.path.join(input_folder, input_file)
             watermark_path = os.path.join(watermark_folder, watermark_file)
-            watermark_output_path = os.path.join(watermark_output_folder, "watermarked_" + input_file)
-            extracted_watermark_path = os.path.join(extracted_watermark_folder, "extracted_" + watermark_file)
+            out_files = input_file.split('.')[0] + '_' + watermark_file
+            watermark_output_path = os.path.join(watermark_output_folder, "watermarked_" + out_files)
+            extracted_watermark_path = os.path.join(extracted_watermark_folder, "extracted_" + out_files)
 
             file_dict = {"input_file": input_file, "watermark_file": watermark_file}
-            image_quality_metrics = perform_watermark('i', input_path, watermark_path, watermark_output_path, extracted_watermark_path)
+            image_quality_metrics = perform_watermark_metrics('i', input_path, watermark_path, watermark_output_path, extracted_watermark_path)
 
             row = {**file_dict, **image_quality_metrics}
             observation_df = observation_df.append(row, ignore_index=True)
 
+            # extracting watermark from watermarked images
+            perform_watermark_metrics('e', input_path, watermark_path, watermark_output_path, extracted_watermark_path)
 observation_df.to_csv('observation.csv', index=False)
 end_time = time.time()
 print("Total time taken: ", int(end_time-start_time))

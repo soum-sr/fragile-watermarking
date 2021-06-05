@@ -12,7 +12,7 @@ attack_images_folder = os.path.join(BASE_DIR, "attack_images")
 def convert_bnw(filename, input_folder, output_folder):
     input_path = os.path.join(input_folder, filename)
     img = Image.open(input_path)
-    img = img.convert("1")
+    img = img.convert("L")
     output_path = os.path.join(output_folder, filename)
     img.save(output_path)
     print("File saved: ", output_path)
