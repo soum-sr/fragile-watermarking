@@ -172,6 +172,34 @@ def perform_watermark_metrics(task, input_file, watermark_file, watermark_output
         extracted_watermark = Image.open(extracted_watermark_path)
         extracted_watermark = np.array(extracted_watermark)
 
+        mse_val = mse(watermark_image, extracted_watermark)
+        rmse_val = rmse(watermark_image, extracted_watermark)
+        psnr_val = psnr(watermark_image, extracted_watermark)
+        uqi_val = uqi(watermark_image, extracted_watermark)
+        ssim_val = ssim(watermark_image, extracted_watermark)
+        ergas_val = ergas(watermark_image, extracted_watermark)
+        scc_val = scc(watermark_image, extracted_watermark)
+        rase_val = rase(watermark_image, extracted_watermark)
+        sam_val = sam(watermark_image, extracted_watermark)
+        vifp_val = vifp(watermark_image, extracted_watermark)
+        msssim_val = msssim(watermark_image, extracted_watermark)
+        psnrb_val = psnrb(watermark_image, extracted_watermark)
+
+        image_quality_metrics = {"mse": mse_val,
+                                 "rmse": rmse_val,
+                                 "psnr": psnr_val,
+                                 "uqi": uqi_val,
+                                 "ssim": ssim_val[0],
+                                 "ergas": ergas_val,
+                                 "scc": scc_val,
+                                 "rase": rase_val,
+                                 "sam": sam_val,
+                                 "vifp": vifp_val,
+                                 "msssim": msssim_val,
+                                 "psnrb": psnrb_val}
+
+        return image_quality_metrics
+
         psnr_val = psnr(watermark_image, extracted_watermark)
         print("Extracted!!")
         return psnr_val

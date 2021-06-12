@@ -2,7 +2,7 @@ import os
 import time
 import pandas as pd
 from PIL import Image
-from utils import perform_watermark
+from utils import perform_watermark_metrics
 
 start_time = time.time()
 
